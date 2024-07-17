@@ -1,2 +1,3 @@
-Example Usage:  go run main.go move NESW
-                 go run main.go move NESW  NNNNEEWW
+Example Usage: <br> 
+1. go run main.go move NESW  <br> 
+2. go run main.go move NESW  NNNNEEWW  <br> 
