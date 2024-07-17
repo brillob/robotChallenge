@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// Create a new warehouse
-	warehouseInstance := challenge.WarehouseBuilder()
+	warehouseInstance := challenge.WarehouseBuilder("R")
 	robots := warehouseInstance.Robots()
 
 	app := cli.NewApp()

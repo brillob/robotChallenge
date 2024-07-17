@@ -37,21 +37,52 @@ type warehouse struct {
 	mu sync.Mutex
 }
 
-func WarehouseBuilder() *warehouse {
+func WarehouseBuilder(robotType string) *warehouse {
 	warehouseInstance := new(warehouse)
-	warehouseInstance.robots = []Robot{
-		&robot{
-			state: RobotState{
-				X:        0,
-				Y:        0,
-				HasCrate: false,
-			},
-			tasks: make(map[string]string),
-		}}
+	BuildRobot(warehouseInstance, robotType)
 	crates := make(map[uint]map[uint]bool)
 	warehouseInstance.crates = crates
 	return warehouseInstance
 }
+
+func BuildRobot(warehouseInstance *warehouse, robotype string) {
+	robotState := RobotState{
+		X:        0,
+		Y:        0,
+		HasCrate: false,
+	}
+	robotTask := make(map[string]string)
+	if robotype == "D" {
+		warehouseInstance.robots = []Robot{
+			&diagonalrobot{
+				state: robotState,
+				tasks: robotTask,
+			}}
+	} else {
+		warehouseInstance.robots = []Robot{
+			&robot{
+				state: robotState,
+				tasks: robotTask,
+			}}
+	}
+
+}
+
+//	func WarehouseBuilderDiagonalRobot() *warehouse {
+//		warehouseInstance := new(warehouse)
+//		warehouseInstance.robots = []Robot{
+//			&diagonalrobot{
+//				state: RobotState{
+//					X:        0,
+//					Y:        0,
+//					HasCrate: false,
+//				},
+//				tasks: make(map[string]string),
+//			}}
+//		crates := make(map[uint]map[uint]bool)
+//		warehouseInstance.crates = crates
+//		return warehouseInstance
+//	}
 func HasCrate(w *warehouse, x uint, y uint) bool {
 	println(w.crates[x][y])
 	return w.crates[x][y] == true
@@ -130,6 +161,97 @@ func (robotvar *robot) EnqueueTask(commands string) (taskID string, position cha
 	return taskID, nil, nil
 
 }
+func (robotvar *diagonalrobot) EnqueueTask(commands string) (taskID string, position chan RobotState, err chan error) {
+	robotvar.mu.Lock()
+	defer robotvar.mu.Unlock()
+
+	taskID = fmt.Sprintf("%d", len(robotvar.tasks)+1)
+	robotvar.tasks[taskID] = commands
+	//fmt.Println(commands)
+	individualcommands := strings.Split(commands, ``)
+	length := len(individualcommands)
+	for i := 0; i < length; i++ {
+
+		switch individualcommands[i] {
+		case "N":
+			robotvar.state.Y++
+			if moveHorizontal(&i, individualcommands, &robotvar.state) == true {
+				length--
+			}
+			sleep(1)
+		case "E":
+			robotvar.state.X++
+			if moveVertical(&i, individualcommands, &robotvar.state) == true {
+				length--
+			}
+			sleep(1)
+		case "S":
+			robotvar.state.Y--
+			if moveHorizontal(&i, individualcommands, &robotvar.state) == true {
+				length--
+			}
+			sleep(1)
+		case "W":
+			robotvar.state.X--
+			if moveVertical(&i, individualcommands, &robotvar.state) == true {
+				length--
+			}
+			sleep(1)
+		case "G":
+			robotvar.state.HasCrate = true
+			sleep(1)
+		case "D":
+			robotvar.state.HasCrate = false
+			sleep(1)
+		}
+
+	}
+	return taskID, nil, nil
+
+}
+func moveHorizontal(i *int, individualcommands []string, state *RobotState) bool {
+	m := *i
+	isIncrement := false
+	robotState := *state
+	if m < len(individualcommands)-1 {
+		if individualcommands[m+1] == "E" {
+			robotState.X++
+			isIncrement = true
+		}
+		if individualcommands[m+1] == "W" {
+			robotState.X--
+			isIncrement = true
+
+		}
+	}
+
+	return isIncrement
+}
+func moveVertical(i *int, individualcommands []string, state *RobotState) bool {
+	m := *i
+	isIncrement := false
+	robotState := *state
+	if m < len(individualcommands)-1 {
+		if individualcommands[m+1] == "N" {
+			robotState.Y++
+			isIncrement = true
+		}
+		if individualcommands[m+1] == "S" {
+			robotState.Y--
+			isIncrement = true
+		}
+	}
+
+	return isIncrement
+}
+
+// can also do a baseclass and inheritance
+type diagonalrobot struct {
+	state RobotState
+	tasks map[string]string
+	mu    sync.Mutex
+}
+
 func sleep(numberOfSeconds time.Duration) {
 	time.Sleep(numberOfSeconds * time.Second)
 }
@@ -147,5 +269,21 @@ func (r *robot) CancelTask(taskID string) error {
 }
 
 func (r *robot) CurrentState() RobotState {
+	return r.state
+}
+func (r *diagonalrobot) CancelTask(taskID string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	_, ok := r.tasks[taskID]
+	if !ok {
+		return errors.New("task not found")
+	}
+	delete(r.tasks, taskID)
+
+	return nil
+}
+
+func (r *diagonalrobot) CurrentState() RobotState {
 	return r.state
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func TestRobotMovement(t *testing.T) {
-	warehouseInstance := challenge.WarehouseBuilder()
+	warehouseInstance := challenge.WarehouseBuilder("R")
 	robots := warehouseInstance.Robots()
 	robot := robots[0]
 	// Test moving north
@@ -40,7 +40,7 @@ func TestRobotMovement(t *testing.T) {
 }
 
 func TestRobotTaskQueue(t *testing.T) {
-	warehouseInstance := challenge.WarehouseBuilder()
+	warehouseInstance := challenge.WarehouseBuilder("R")
 	robots := warehouseInstance.Robots()
 	robot := robots[0]
 
@@ -56,9 +56,25 @@ func TestRobotTaskQueue(t *testing.T) {
 		t.Errorf("Expected robot to be at (0, 0), but got (%d, %d)", state.X, state.Y)
 	}
 }
+func TestDiagonalRobotTaskQueue(t *testing.T) {
+	warehouseInstance := challenge.WarehouseBuilder("D")
+	robots := warehouseInstance.Robots()
+	robot := robots[0]
 
+	// Enqueue multiple tasks
+	robot.EnqueueTask("N E")
+	robot.EnqueueTask("S W")
+
+	// Wait for tasks to complete
+	time.Sleep(3 * time.Second)
+
+	state := robot.CurrentState()
+	if state.X != 0 || state.Y != 0 {
+		t.Errorf("Expected robot to be at (0, 0), but got (%d, %d)", state.X, state.Y)
+	}
+}
 func TestRobotAddCrate(t *testing.T) {
-	warehouseInstance := challenge.WarehouseBuilder()
+	warehouseInstance := challenge.WarehouseBuilder("R")
 	warehouseInstance.AddCrate(1, 2)
 	if !challenge.HasCrate(warehouseInstance, 1, 2) {
 		t.Errorf("Expected a crate at that location")
@@ -66,7 +82,7 @@ func TestRobotAddCrate(t *testing.T) {
 }
 
 func TestRobotDeleteCrate(t *testing.T) {
-	warehouseInstance := challenge.WarehouseBuilder()
+	warehouseInstance := challenge.WarehouseBuilder("R")
 	//warehouseInstance.AddCrate(1, 2)
 	warehouseInstance.DelCrate(1, 2)
 	if challenge.HasCrate(warehouseInstance, 1, 2) {
