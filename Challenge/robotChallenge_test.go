@@ -32,7 +32,7 @@ func TestRobotMovement(t *testing.T) {
 	}
 
 	// Test moving west
-	robot.EnqueueTask("W")
+	robot.EnqueueTask("SSSSSSSSSS")
 	state = robot.CurrentState()
 	if state.X != 0 || state.Y != 0 {
 		t.Errorf("Expected robot to be at (0, 0), but got (%d, %d)", state.X, state.Y)

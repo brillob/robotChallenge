@@ -138,15 +138,26 @@ func (robotvar *robot) EnqueueTask(commands string) (taskID string, position cha
 		switch val {
 		case "N":
 			robotvar.state.Y++
+			fmt.Println("Moving North: ", "\u2191")
 			sleep(1)
 		case "E":
 			robotvar.state.X++
+			fmt.Println("Moving East: ", "\u2192")
 			sleep(1)
 		case "S":
-			robotvar.state.Y--
+			if robotvar.state.Y > 0 {
+				robotvar.state.Y--
+				fmt.Println("Moving South: ", "\u2193")
+			}
+			fmt.Println("Stopped moving South as it reached 0 ")
+
 			sleep(1)
 		case "W":
-			robotvar.state.X--
+			if robotvar.state.X > 0 {
+				robotvar.state.X--
+				fmt.Println("Moving West: ", "\u2190")
+			}
+			fmt.Println("Stopped moving West as it reached 0 ")
 			sleep(1)
 		case "G":
 			robotvar.state.HasCrate = true
@@ -186,12 +197,14 @@ func (robotvar *diagonalrobot) EnqueueTask(commands string) (taskID string, posi
 			}
 			sleep(1)
 		case "S":
+			//TODO - Implement zero check like in normal robot
 			robotvar.state.Y--
 			if moveHorizontal(&i, individualcommands, &robotvar.state) == true {
 				length--
 			}
 			sleep(1)
 		case "W":
+			//TODO - Implement zero check like in normal robot
 			robotvar.state.X--
 			if moveVertical(&i, individualcommands, &robotvar.state) == true {
 				length--
