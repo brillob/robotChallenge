@@ -14,28 +14,28 @@ func TestRobotMovement(t *testing.T) {
 	robot.EnqueueTask("N")
 	state := robot.CurrentState()
 	if state.X != 0 || state.Y != 1 {
-		t.Errorf("Expected robot to be at (0, 1), got (%d, %d)", state.X, state.Y)
+		t.Errorf("Expected robot to be at (0, 1), but got (%d, %d)", state.X, state.Y)
 	}
 
 	// Test moving east
 	robot.EnqueueTask("E")
 	state = robot.CurrentState()
 	if state.X != 1 || state.Y != 1 {
-		t.Errorf("Expected robot to be at (1, 1), got (%d, %d)", state.X, state.Y)
+		t.Errorf("Expected robot to be at (1, 1), but got (%d, %d)", state.X, state.Y)
 	}
 
 	// Test moving south
 	robot.EnqueueTask("S")
 	state = robot.CurrentState()
 	if state.X != 1 || state.Y != 0 {
-		t.Errorf("Expected robot to be at (1, 0), got (%d, %d)", state.X, state.Y)
+		t.Errorf("Expected robot to be at (1, 0), but got (%d, %d)", state.X, state.Y)
 	}
 
 	// Test moving west
 	robot.EnqueueTask("W")
 	state = robot.CurrentState()
 	if state.X != 0 || state.Y != 0 {
-		t.Errorf("Expected robot to be at (0, 0), got (%d, %d)", state.X, state.Y)
+		t.Errorf("Expected robot to be at (0, 0), but got (%d, %d)", state.X, state.Y)
 	}
 }
 
@@ -53,7 +53,7 @@ func TestRobotTaskQueue(t *testing.T) {
 
 	state := robot.CurrentState()
 	if state.X != 0 || state.Y != 0 {
-		t.Errorf("Expected robot to be at (0, 0), got (%d, %d)", state.X, state.Y)
+		t.Errorf("Expected robot to be at (0, 0), but got (%d, %d)", state.X, state.Y)
 	}
 }
 

@@ -102,29 +102,37 @@ func (robotvar *robot) EnqueueTask(commands string) (taskID string, position cha
 	taskID = fmt.Sprintf("%d", len(robotvar.tasks)+1)
 	robotvar.tasks[taskID] = commands
 	//fmt.Println(commands)
-	idPost := strings.Split(commands, ``)
-	for _, val := range idPost {
+	indivualCommand := strings.Split(commands, ``)
+	for _, val := range indivualCommand {
 		switch val {
 		case "N":
 			robotvar.state.Y++
+			sleep(1)
 		case "E":
 			robotvar.state.X++
+			sleep(1)
 		case "S":
 			robotvar.state.Y--
+			sleep(1)
 		case "W":
 			robotvar.state.X--
+			sleep(1)
 		case "G":
 			robotvar.state.HasCrate = true
+			sleep(1)
 		case "D":
 			robotvar.state.HasCrate = false
+			sleep(1)
 		}
-		time.Sleep(1 * time.Second)
+
 	}
 
 	return taskID, nil, nil
 
 }
-
+func sleep(numberOfSeconds time.Duration) {
+	time.Sleep(numberOfSeconds * time.Second)
+}
 func (r *robot) CancelTask(taskID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -133,8 +141,6 @@ func (r *robot) CancelTask(taskID string) error {
 	if !ok {
 		return errors.New("task not found")
 	}
-
-	//close(taskChan)
 	delete(r.tasks, taskID)
 
 	return nil
@@ -143,36 +149,3 @@ func (r *robot) CancelTask(taskID string) error {
 func (r *robot) CurrentState() RobotState {
 	return r.state
 }
-
-// func main() {
-// 	// Create a new warehouse
-// 	warehouseInstance := new(warehouse)
-// 	warehouseInstance.robots = []Robot{
-// 		&robot{
-// 			state: RobotState{
-// 				X:        0,
-// 				Y:        0,
-// 				HasCrate: false,
-// 			},
-// 			tasks: make(map[string]string),
-// 		}}
-// 	warehouseInstance.crates = make(map[uint]map[uint]bool)
-// 	robots := warehouseInstance.Robots()
-
-// 	// Enqueue a task for the first robot
-// 	taskID, _, err := robots[0].EnqueueTask("NNEEG")
-// 	if err != nil {
-// 		fmt.Println("Error enqueuing task:", err)
-// 		return
-// 	}
-// 	fmt.Println("Task ID:", taskID)
-
-// 	fmt.Println(robots[0].CurrentState().X)
-// 	fmt.Println(robots[0].CurrentState().Y)
-// 	// Cancel the task
-// 	err1 := robots[0].CancelTask(taskID)
-// 	if err1 != nil {
-// 		fmt.Println("Error cancelling task:", err)
-// 		return
-// 	}
-// }
