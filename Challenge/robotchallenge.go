@@ -148,16 +148,18 @@ func (robotvar *robot) EnqueueTask(commands string) (taskID string, position cha
 			if robotvar.state.Y > 0 {
 				robotvar.state.Y--
 				fmt.Println("Moving South: ", "\u2193")
+			} else {
+				fmt.Println("Stopped moving South as it reached 0 ")
 			}
-			fmt.Println("Stopped moving South as it reached 0 ")
 
 			sleep(1)
 		case "W":
 			if robotvar.state.X > 0 {
 				robotvar.state.X--
 				fmt.Println("Moving West: ", "\u2190")
+			} else {
+				fmt.Println("Stopped moving West as it reached 0 ")
 			}
-			fmt.Println("Stopped moving West as it reached 0 ")
 			sleep(1)
 		case "G":
 			robotvar.state.HasCrate = true
